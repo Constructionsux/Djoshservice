@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AutoPaint — Premium Automotive Paints</title>
+    <meta name="description" content="AutoPaint — High quality automotive paints. Browse products, learn about us, and contact our experts." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='%23ff6b6b' cx='50' cy='50' r='50'/%3E%3C/text%3E%3C/svg%3E" />
+    <style>
+        :root{
+            --bg:#0f1724;
+            --card:#0b1220;
+            --muted:#94a3b8;
+            --accent:#ff6b6b;
+            --glass: rgba(255,255,255,0.04);
+            --glass-2: rgba(255,255,255,0.02);
+            --glass-3: rgba(255,255,255,0.06);
+            --max-width:1200px;
+            --radius:14px;
+            --ease:cubic-bezier(.16,.84,.44,1);
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0;
+            font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: radial-gradient(800px 400px at 10% 10%, rgba(255,107,107,0.07), transparent),
+                                    radial-gradient(600px 300px at 90% 90%, rgba(99,102,241,0.04), transparent),
+                                    var(--bg);
+            color:#e6eef8;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            padding-bottom:80px;
+        }
+
+        /* Layout */
+        .wrap{max-width:var(--max-width); margin:32px auto; padding:0 20px;}
+        header{
+            display:flex; align-items:center; justify-content:space-between;
+            gap:16px; margin-bottom:24px;
+        }
+        .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit}
+        .logo{
+            width:56px; height:56px; border-radius:12px;
+            background:linear-gradient(135deg,var(--accent),#7c5cff);
+            box-shadow:0 6px 24px rgba(20,20,30,0.6);
+            display:grid; place-items:center; font-weight:700; color:white; font-size:18px;
+            transform:translateY(0);
+            transition:transform .36s var(--ease);
+        }
+        .brand:hover .logo{transform:translateY(-4px) rotate(-6deg)}
+        nav{display:flex; gap:14px; align-items:center}
+        nav a{color:var(--muted); text-decoration:none; padding:8px 12px; border-radius:8px; font-weight:600; transition:all .18s}
+        nav a:hover{color:#fff; background:var(--glass)}
+        .cta{background:linear-gradient(90deg,var(--accent),#7c5cff); color:white; padding:10px 14px; border-radius:10px; box-shadow:0 6px 24px rgba(127,81,255,0.12)}
+        .controls{display:flex; gap:12px; align-items:center}
+
+        /* Hero */
+        .hero{
+            display:grid; grid-template-columns:1fr 460px; gap:28px; align-items:center;
+            margin-bottom:40px;
+        }
+        .hero-card{
+            background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+            border-radius:var(--radius);
+            padding:32px; box-shadow:0 8px 40px rgba(2,6,23,0.6);
+            position:relative; overflow:hidden;
+        }
+        .hero h1{font-size:40px; margin:0 0 8px; line-height:1.05}
+        .hero p{color:var(--muted); margin:0 0 18px}
+        .hero .features{display:flex; gap:12px; flex-wrap:wrap}
+        .pill{background:var(--glass); padding:8px 10px; border-radius:999px; color:var(--muted); font-weight:600}
+
+        /* product grid */
+        .products{
+            display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:18px;
+        }
+        .product{
+            background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius:12px; padding:16px; transition:transform .36s var(--ease), box-shadow .36s var(--ease);
+            box-shadow:0 6px 20px rgba(2,6,23,0.5);
+            position:relative; overflow:hidden;
+        }
+        .product:hover{transform:translateY(-8px); box-shadow:0 20px 60px rgba(2,6,23,0.6)}
+        .swatches{display:flex; gap:8px; margin-top:12px}
+        .sw{width:28px; height:28px; border-radius:6px; border:2px solid rgba(0,0,0,0.16); box-shadow:0 4px 14px rgba(0,0,0,0.25)}
+        .price{font-weight:800; font-size:18px}
+        .product-actions{display:flex; justify-content:space-between; gap:8px; margin-top:14px}
+        .btn{background:var(--glass); color:var(--muted); padding:8px 12px; border-radius:10px; border:none; font-weight:700; cursor:pointer; transition:all .18s}
+        .btn.primary{background:linear-gradient(90deg,var(--accent),#7c5cff); color:white; box-shadow:0 8px 30px rgba(124,92,255,0.12)}
+        .btn:active{transform:translateY(2px)}
+
+        /* sidebar cart */
+        .cart-toggle{position:fixed; right:22px; bottom:22px; z-index:40; display:grid; place-items:center}
+        .cart-btn{width:64px; height:64px; border-radius:16px; background:linear-gradient(135deg,#7c5cff,#ff6b6b); color:white; font-weight:800; box-shadow:0 20px 60px rgba(12,10,20,0.6); border:none; cursor:pointer}
+        .cart-drawer{
+            position:fixed; right:18px; bottom:100px; width:360px; max-height:70vh; overflow:auto;
+            background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius:14px; padding:16px; box-shadow:0 40px 100px rgba(2,6,23,0.6); z-index:35;
+            transform:translateY(10px) scale(.98); opacity:0; pointer-events:none; transition:all .28s var(--ease);
+        }
+        .cart-drawer.open{transform:translateY(0) scale(1); opacity:1; pointer-events:auto}
+        .cart-item{display:flex; gap:12px; align-items:center; padding:10px; border-radius:10px; background:linear-gradient(90deg, rgba(255,255,255,0.01), transparent)}
+        .cart-item + .cart-item{margin-top:8px}
+        .cart-item .thumb{width:56px;height:46px;border-radius:8px;flex:0 0 56px; box-shadow:inset 0 -6px 12px rgba(0,0,0,0.2)}
+        .qty{display:flex; gap:8px; align-items:center}
+        .small{font-size:13px;color:var(--muted)}
+
+        /* About & contact */
+        section{margin:32px 0}
+        .about-grid{display:grid; grid-template-columns:1fr 360px; gap:18px; align-items:start}
+        .card{background:var(--card); padding:20px; border-radius:12px; box-shadow:0 12px 40px rgba(2,6,23,0.6)}
+        .contact-form{display:grid; gap:10px}
+        input,textarea,select{background:var(--glass-2); border:none; padding:12px; color:inherit; border-radius:10px; outline:none; font-size:14px}
+        textarea{min-height:120px; resize:vertical}
+        .actions{display:flex; gap:10px; justify-content:flex-end; margin-top:8px}
+
+        /* Testimonials */
+        .testimonials{display:flex; gap:12px; overflow:auto; padding-bottom:8px}
+        .test-card{min-width:260px; padding:14px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow:0 8px 20px rgba(2,6,23,0.5)}
+
+        /* Footer */
+        footer{margin-top:40px; color:var(--muted); display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap}
+
+        /* small screens */
+        @media (max-width:980px){
+            .hero{grid-template-columns:1fr; padding-bottom:8px}
+            .products{grid-template-columns:repeat(2,1fr)}
+            .about-grid{grid-template-columns:1fr}
+        }
+        @media (max-width:600px){
+            .products{grid-template-columns:1fr}
+            header{flex-direction:column; align-items:flex-start}
+            nav{order:2; width:100%; display:flex; justify-content:space-between}
+            .cart-drawer{right:12px; left:12px; width:auto}
+        }
+
+        /* Animations */
+        .float {
+            animation: float 6s var(--ease) infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0) }
+            50% { transform: translateY(-8px) }
+            100% { transform: translateY(0) }
+        }
+        .reveal {
+            opacity:0; transform: translateY(16px) scale(.995); transition: all .7s var(--ease); will-change:transform,opacity;
+        }
+        .reveal.show { opacity:1; transform:translateY(0) scale(1) }
+        .tilt { transition:transform .36s var(--ease); will-change:transform }
+        /* subtle animated gradient overlay */
+        .gradient-blob{
+            position:absolute; right:-120px; top:-80px; width:480px; height:480px; filter:blur(60px); opacity:.24;
+            background: conic-gradient(from 120deg, #ff6b6b, #7c5cff, #3dd2ff, #ff6b6b);
+            transform:rotate(12deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <header>
+            <a href="#" class="brand" onclick="scrollToSection('top'); return false">
+                <div class="logo">AP</div>
+                <div>
+                    <div style="font-weight:800">AutoPaint</div>
+                    <div style="font-size:13px; color:var(--muted)">Precision automotive coatings</div>
+                </div>
+            </a>
+
+            <nav>
+                <a href="#products" onclick="scrollToSection('products'); return false">Products</a>
+                <a href="#about" onclick="scrollToSection('about'); return false">About</a>
+                <a href="#testimonials" onclick="scrollToSection('testimonials'); return false">Testimonials</a>
+                <a href="#contact" onclick="scrollToSection('contact'); return false">Contact</a>
+            </nav>
+
+            <div class="controls">
+                <button class="btn" id="themeBtn" title="Toggle theme">Theme</button>
+                <button class="cta" onclick="scrollToSection('contact')">Get Quote</button>
+            </div>
+        </header>
+
+        <main id="top">
+            <section class="hero">
+                <div class="hero-card reveal" data-reveal>
+                    <div class="gradient-blob float" aria-hidden="true"></div>
+                    <h1>Bring your car's color back to life</h1>
+                    <p>Premium automotive paints and coatings engineered for durability, color fidelity and professional finish.</p>
+                    <div class="features">
+                        <div class="pill">High UV resistance</div>
+                        <div class="pill">Fast drying</div>
+                        <div class="pill">Custom color matching</div>
+                    </div>
+
+                    <div style="display:flex; gap:12px; margin-top:18px; align-items:center">
+                        <button class="btn primary" onclick="scrollToSection('products')">Shop Paints</button>
+                        <button class="btn" onclick="openDemo()">Live Demo</button>
+                        <div style="margin-left:auto; text-align:right">
+                            <div style="font-size:12px; color:var(--muted)">Trusted by</div>
+                            <div style="font-weight:800; font-size:18px">1200+ shops</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:20px; display:flex; gap:12px; align-items:center">
+                        <div style="width:64px; height:46px; border-radius:10px; background:linear-gradient(90deg,#ff6b6b,#ff9a9a); box-shadow:inset 0 -6px 14px rgba(0,0,0,0.18)"></div>
+                        <div style="width:64px; height:46px; border-radius:10px; background:linear-gradient(90deg,#7c5cff,#3dd2ff); box-shadow:inset 0 -6px 14px rgba(0,0,0,0.18)"></div>
+                        <div style="width:64px; height:46px; border-radius:10px; background:linear-gradient(90deg,#ffbe6b,#ffd67a); box-shadow:inset 0 -6px 14px rgba(0,0,0,0.18)"></div>
+                    </div>
+                </div>
+
+                <aside class="card reveal" data-reveal>
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px">
+                        <div>
+                            <div style="font-weight:800">Why AutoPaint?</div>
+                            <div class="small">Formulated for real-world durability</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div style="font-weight:900; font-size:22px; line-height:1">$</div>
+                            <div class="small">Competitive pricing</div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; gap:10px">
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <div class="small">Free color consultation</div>
+                            <div class="small">Included</div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <div class="small">Samples shipped</div>
+                            <div class="small">48h</div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <div class="small">Bulk discounts</div>
+                            <div class="small">Up to 35%</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:16px; display:flex; gap:8px">
+                        <button class="btn" onclick="scrollToSection('contact')">Request Quote</button>
+                        <button class="btn primary" onclick="scrollToSection('products')">View Products</button>
+                    </div>
+                </aside>
+            </section>
+
+            <section id="products">
+                <div style="display:flex; justify-content:space-between; align-items:end; gap:12px; margin-bottom:12px">
+                    <div>
+                        <h2 style="margin:0">Featured Paints</h2>
+                        <div class="small">Shop by finish, durability or color family</div>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center">
+                        <input id="search" placeholder="Search color or code..." style="background:var(--glass); border-radius:999px; padding:8px 12px; border:none; color:inherit" />
+                        <select id="filter" style="background:var(--glass); border-radius:999px; padding:8px 12px; color:inherit; border:none">
+                            <option value="all">All finishes</option>
+                            <option value="metallic">Metallic</option>
+                            <option value="matte">Matte</option>
+                            <option value="pearl">Pearl</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-bottom:24px">
+                    <div style="border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(2,6,23,0.5)">
+                        <img src="https://images.unsplash.com/photo-1567818735868-e71b99932e29?w=500&h=300&fit=crop" alt="Muscle car" style="width:100%; height:300px; object-fit:cover; display:block" />
+                        <div style="padding:12px; background:var(--card)">
+                            <div style="font-weight:800">American Muscle</div>
+                            <div class="small">Classic performance styling</div>
+                        </div>
+                    </div>
+                    <div style="border-radius:12px; overflow:hidden; box-shadow:0 8px 24px rgba(2,6,23,0.5)">
+                        <img src="jpeg" alt="Sports car" style="width:100%; height:300px; object-fit:cover; display:block" />
+                        <div style="padding:12px; background:var(--card)">
+                            <div style="font-weight:800">European Sports</div>
+                            <div class="small">Luxury and performance combined</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="products" id="productGrid">
+                    <!-- products injected by JS -->
+                </div>
+            </section>
+
+            <section id="about">
+                <div class="about-grid">
+                    <div>
+                        <h3>About AutoPaint</h3>
+                        <p class="small">We combine chemical engineering and color science to produce automotive paints that last. Our coatings resist UV, chips and maintain gloss under tough conditions. We support professional shops with training and matching services.</p>
+
+                        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:14px">
+                            <div class="card reveal" data-reveal>
+                                <div style="font-weight:800">Color Lab</div>
+                                <div class="small">Spectrophotometer-matched color recipes</div>
+                            </div>
+                            <div class="card reveal" data-reveal>
+                                <div style="font-weight:800">Pro Support</div>
+                                <div class="small">Dedicated technical help for shops</div>
+                            </div>
+                            <div class="card reveal" data-reveal>
+                                <div style="font-weight:800">Eco Options</div>
+                                <div class="small">Low-VOC and waterborne lines</div>
+                            </div>
+                            <div class="card reveal" data-reveal>
+                                <div style="font-weight:800">Fast Shipping</div>
+                                <div class="small">Same-day fulfillment on in-stock items</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <aside class="card">
+                        <div style="font-weight:900; font-size:18px">Quality Guarantee</div>
+                        <div class="small" style="margin-top:8px">All products undergo lab verification and field testing.</div>
+
+                        <div style="display:flex; gap:8px; margin-top:12px; align-items:center">
+                            <div style="width:84px; height:64px; border-radius:8px; background:linear-gradient(90deg,#ff6b6b,#7c5cff)"></div>
+                            <div>
+                                <div style="font-weight:800">Matching Service</div>
+                                <div class="small">Bring a sample, we'll match color within 0.5 Delta E</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:14px" class="small">Want to see how a color looks on your car? Use Live Demo for instant previews and save shades to your cart.</div>
+                    </aside>
+                </div>
+            </section>
+
+            <section id="testimonials">
+                <h3>What professionals say</h3>
+                <div class="testimonials" style="margin-top:12px">
+                    <div class="test-card reveal" data-reveal>
+                        <div style="font-weight:800">AutoWorks</div>
+                        <div class="small">"Durable and consistent — we've reduced rework by 28%."</div>
+                    </div>
+                    <div class="test-card reveal" data-reveal>
+                        <div style="font-weight:800">ColorPro Shop</div>
+                        <div class="small">"Fast matching and helpful tech support."</div>
+                    </div>
+                    <div class="test-card reveal" data-reveal>
+                        <div style="font-weight:800">Elite Detail</div>
+                        <div class="small">"Customer satisfaction skyrocketed after switching."</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact">
+                <h3>Contact & Quote</h3>
+                <div style="display:grid; grid-template-columns:1fr 360px; gap:18px; margin-top:12px">
+                    <div class="card">
+                        <form class="contact-form" id="contactForm" onsubmit="submitContact(event)">
+                            <input name="name" id="name" placeholder="Full name" required />
+                            <input name="email" id="email" placeholder="Email address" type="email" required />
+                            <input name="shop" id="shop" placeholder="Shop name (optional)" />
+                            <select name="service" id="service">
+                                <option value="quote">Request a quote</option>
+                                <option value="technical">Technical support</option>
+                                <option value="color">Color matching</option>
+                            </select>
+                            <textarea name="message" id="message" placeholder="Message or sample color code"></textarea>
+                            <div class="actions">
+                                <button type="reset" class="btn">Reset</button>
+                                <button type="submit" class="btn primary">Send</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <aside class="card">
+                        <div style="font-weight:800">Get in touch</div>
+                        <div class="small" style="margin-top:8px">Phone: +1 332 877 7250</div>
+                        <div class="small">Email: Joshuaheoft93@gmail.com</div>
+
+                        <div style="margin-top:12px">
+                            <div style="font-weight:700">Store hours</div>
+                            <div class="small">Mon-Fri 8:30am – 6pm</div>
+                        </div>
+
+                        <div style="margin-top:12px" class="small">
+                            We respond within one business day for quotes. For urgent technical assistance, call the number above.
+                        </div>
+                    </aside>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div>© <span id="year"></span> AutoPaint • All rights reserved</div>
+            <div style="display:flex; gap:12px; align-items:center">
+                <div class="small">Privacy</div>
+                <div class="small">Terms</div>
+            </div>
+        </footer>
+    </div>
+
+    <div class="cart-toggle">
+        <button class="cart-btn" id="cartBtn" title="Open cart">Cart <span id="cartCount" style="margin-left:6px; font-weight:700">0</span></button>
+    </div>
+    <div class="cart-drawer" id="cartDrawer" aria-hidden="true"></div>
+
+    <!-- Demo modal -->
+    <div id="demoModal" style="position:fixed; inset:0; display:none; z-index:60; align-items:center; justify-content:center; background:linear-gradient(180deg, rgba(2,6,23,0.5), rgba(2,6,23,0.8));">
+        <div style="width:900px; max-width:96%; background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.02)); border-radius:16px; padding:18px; box-shadow:0 30px 120px rgba(2,6,23,0.8);">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                <div style="font-weight:800">Live Color Preview</div>
+                <div style="display:flex; gap:8px; align-items:center">
+                    <button class="btn" onclick="closeDemo()">Close</button>
+                </div>
+            </div>
+            <div style="display:flex; gap:12px; margin-top:12px; align-items:center; flex-wrap:wrap">
+                <div style="flex:1; min-width:320px;">
+                    <div id="carPreview" style="height:320px; border-radius:12px; background:linear-gradient(90deg,#111827,#0b1220); display:grid; place-items:center; color:#fff; position:relative;">
+                        <svg width="260" viewBox="0 0 800 400" style="filter:drop-shadow(0 18px 40px rgba(0,0,0,0.6));">
+                            <rect x="40" y="140" rx="40" ry="40" width="700" height="120" fill="#222"/>
+                            <g id="car-shape" transform="translate(60,40)">
+                                <path id="carBody" d="M20 180 C60 120 180 80 280 80 C380 80 520 80 620 140 C660 164 700 180 740 180 L740 220 L20 220 Z" fill="#ff6b6b"></path>
+                                <circle cx="180" cy="240" r="38" fill="#222"></circle>
+                                <circle cx="620" cy="240" r="38" fill="#222"></circle>
+                            </g>
+                        </svg>
+                        <div style="position:absolute; right:14px; bottom:14px; font-size:12px; color:var(--muted)">Try different color swatches</div>
+                    </div>
+                </div>
+
+                <div style="width:320px;">
+                    <div style="display:grid; gap:8px">
+                        <div style="display:flex; gap:8px; flex-wrap:wrap">
+                            <button class="btn" onclick="applyColor('#ff6b6b')">Red</button>
+                            <button class="btn" onclick="applyColor('#7c5cff')">Purple</button>
+                            <button class="btn" onclick="applyColor('#3dd2ff')">Cyan</button>
+                            <button class="btn" onclick="applyColor('#ffd67a')">Gold</button>
+                            <input id="hexColor" placeholder="#rrggbb" style="padding:8px 10px; border-radius:8px; flex:1" />
+                            <button class="btn primary" onclick="applyFromInput()">Apply</button>
+                        </div>
+
+                        <div style="display:flex; gap:8px; align-items:center">
+                            <label class="small" style="width:120px">Finish</label>
+                            <select id="finishSelect" style="background:var(--glass); border-radius:8px; padding:8px 10px; color:inherit">
+                                <option value="gloss">Gloss</option>
+                                <option value="matte">Matte</option>
+                                <option value="metallic">Metallic</option>
+                            </select>
+                        </div>
+
+                        <div style="display:flex; gap:8px; align-items:center">
+                            <label class="small" style="width:120px">Sheen</label>
+                            <input id="sheen" type="range" min="0" max="100" value="70" oninput="updateSheen(this.value)" />
+                            <div id="sheenVal" class="small">70</div>
+                        </div>
+
+                        <div style="display:flex; gap:8px; margin-top:8px">
+                            <button class="btn primary" onclick="saveDemoColor()">Save to Cart</button>
+                            <button class="btn" onclick="downloadSwatch()">Download Swatch</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GitHub Copilot
+        (function(){
+            const products = [
+                { id:'AP-101', name:'Premium Gloss Red', finish:'metallic', price:29.99, colors:['#ff6b6b','#ff9a9a','#ff4433'], desc:'High-gloss metallic finish ideal for show cars.' },
+                { id:'AP-202', name:'Pro Matte Black', finish:'matte', price:34.5, colors:['#0b0b0b','#2b2b2b','#4b4b4b'], desc:'Ultra-matte durable coating.' },
+                { id:'AP-303', name:'Pearl White LX', finish:'pearl', price:39.0, colors:['#f7f7f7','#efeaea'], desc:'Pearlescent finish with depth and sparkle.' },
+                { id:'AP-404', name:'Ocean Cyan', finish:'metallic', price:31.5, colors:['#3dd2ff','#00a8d3'], desc:'Vibrant cyan with metallic flake.' },
+                { id:'AP-505', name:'Sunbeam Gold', finish:'metallic', price:34.99, colors:['#ffd67a','#ffbe6b'], desc:'Warm gold with excellent coverage.' },
+                { id:'AP-606', name:'Rally Blue', finish:'gloss', price:28.5, colors:['#3b82f6','#1e40af'], desc:'Classic gloss blue performance finish.' }
+            ];
+
+            const productGrid = document.getElementById('productGrid');
+            const search = document.getElementById('search');
+            const filter = document.getElementById('filter');
+            const cartBtn = document.getElementById('cartBtn');
+            const cartDrawer = document.getElementById('cartDrawer');
+            const cartCount = document.getElementById('cartCount');
+            const yearEl = document.getElementById('year');
+            yearEl.textContent = new Date().getFullYear();
+
+            // cart persisted in localStorage
+            let cart = JSON.parse(localStorage.getItem('autopaint_cart') || '[]');
+
+            function saveCart(){ localStorage.setItem('autopaint_cart', JSON.stringify(cart)); updateCartUI(); }
+
+            function updateCartUI(){
+                cartCount.textContent = cart.reduce((s,i)=>s+i.qty,0);
+                renderCartDrawer();
+            }
+
+            function renderProducts(filterVal='', q=''){
+                productGrid.innerHTML = '';
+                const filtered = products.filter(p=>{
+                    const matchFinish = filterVal === 'all' || !filterVal ? true : p.finish === filterVal;
+                    const matchQ = !q ? true : (p.name+ ' ' + p.id + ' ' + p.desc).toLowerCase().includes(q.toLowerCase());
+                    return matchFinish && matchQ;
+                });
+                filtered.forEach(p=>{
+                    const el = document.createElement('div'); el.className='product tilt reveal'; el.dataset.reveal=true;
+                    el.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start">
+                            <div>
+                                <div style="font-weight:800">${p.name}</div>
+                                <div class="small">${p.id} • ${p.finish}</div>
+                            </div>
+                            <div class="price">$${p.price.toFixed(2)}</div>
+                        </div>
+                        <div class="small" style="margin-top:8px">${p.desc}</div>
+                        <div class="swatches" aria-hidden="true">
+                            ${p.colors.map(c=>`<div class="sw" style="background:${c}"></div>`).join('')}
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn" onclick="openDetails('${p.id}')">Details</button>
+                            <div style="display:flex; gap:8px; align-items:center">
+                                <button class="btn" onclick="addToCart('${p.id}')">Add</button>
+                                <button class="btn primary" onclick="buyNow('${p.id}')">Buy</button>
+                            </div>
+                        </div>
+                    `;
+                    productGrid.appendChild(el);
+                });
+                observeReveals();
+            }
+
+            // render initial
+            renderProducts('all','');
+
+            // search/filter events
+            search.addEventListener('input', ()=> renderProducts(filter.value, search.value));
+            filter.addEventListener('change', ()=> renderProducts(filter.value, search.value));
+
+            // cart functions
+            window.addToCart = function(id){
+                const prod = products.find(p=>p.id===id);
+                const existing = cart.find(c=>c.id===id);
+                if(existing){ existing.qty += 1; }
+                else cart.push({ id:prod.id, name:prod.name, price:prod.price, qty:1 });
+                saveCart();
+                flashToast(`${prod.name} added`);
+            }
+
+            window.buyNow = function(id){
+                addToCart(id);
+                openCart();
+                flashToast('Proceed to checkout in demo mode');
+            }
+
+            function renderCartDrawer(){
+                if(cart.length===0){
+                    cartDrawer.innerHTML = `<div style="padding:12px">Your cart is empty</div>`;
+                    return;
+                }
+                cartDrawer.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+                    <div style="font-weight:800">Cart</div><button class="btn" onclick="clearCart()">Clear</button>
+                </div>`;
+                cart.forEach(item=>{
+                    const div = document.createElement('div'); div.className='cart-item';
+                    div.innerHTML = `
+                        <div style="flex:1">
+                            <div style="font-weight:800">${item.name}</div>
+                            <div class="small">$${item.price.toFixed(2)}</div>
+                        </div>
+                        <div class="qty">
+                            <button class="btn" onclick="decrement('${item.id}')">-</button>
+                            <div class="small">${item.qty}</div>
+                            <button class="btn" onclick="increment('${item.id}')">+</button>
+                        </div>
+                    `;
+                    cartDrawer.appendChild(div);
+                });
+                const total = cart.reduce((s,i)=>s + i.price*i.qty,0);
+                const footer = document.createElement('div'); footer.style.marginTop='12px'; footer.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center">
+                        <div style="font-weight:800">Total</div><div style="font-weight:800">$${total.toFixed(2)}</div>
+                    </div>
+                    <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end">
+                        <button class="btn" onclick="closeCart()">Continue</button>
+                        <button class="btn primary" onclick="checkout()">Checkout</button>
+                    </div>
+                `;
+                cartDrawer.appendChild(footer);
+            }
+
+            window.increment = function(id){ const itm = cart.find(i=>i.id===id); if(itm){ itm.qty++; saveCart(); } }
+            window.decrement = function(id){ const itm = cart.find(i=>i.id===id); if(itm){ itm.qty--; if(itm.qty<=0) cart = cart.filter(c=>c.id!==id); saveCart(); } }
+            window.clearCart = function(){ cart = []; saveCart(); flashToast('Cart cleared'); }
+
+            function checkout(){
+                flashToast('Simulated checkout — Thank you!');
+                cart = []; saveCart();
+                closeCart();
+            }
+
+            // cart drawer toggles
+            cartBtn.addEventListener('click', ()=> {
+                if(cartDrawer.classList.contains('open')) closeCart(); else openCart();
+            });
+            window.openCart = function(){ cartDrawer.classList.add('open'); cartDrawer.setAttribute('aria-hidden','false'); }
+            window.closeCart = function(){ cartDrawer.classList.remove('open'); cartDrawer.setAttribute('aria-hidden','true'); }
+
+            // details modal (demo using alert)
+            window.openDetails = function(id){
+                const p = products.find(x=>x.id===id);
+                alert(`${p.name}\n\n${p.desc}\n\nPrice: $${p.price.toFixed(2)}\n\nFinish: ${p.finish}`);
+            }
+
+            // contact form
+            window.submitContact = function(e){
+                e.preventDefault();
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                if(!name || !email){ flashToast('Please fill required fields'); return; }
+                flashToast('Message sent — we will contact you shortly');
+                e.target.reset();
+            }
+
+            // simple toasts
+            let toastTimer;
+            function flashToast(text){
+                clearTimeout(toastTimer);
+                let t = document.getElementById('toast');
+                if(!t){
+                    t = document.createElement('div'); t.id='toast';
+                    t.style.position='fixed'; t.style.left='50%'; t.style.bottom='26px'; t.style.transform='translateX(-50%)';
+                    t.style.background='linear-gradient(90deg,#111827,#0b1220)'; t.style.padding='10px 16px'; t.style.borderRadius='999px';
+                    t.style.boxShadow='0 16px 40px rgba(2,6,23,0.6)'; t.style.zIndex=80; t.style.color='white'; t.style.fontWeight=700;
+                    document.body.appendChild(t);
+                }
+                t.textContent = text;
+                t.style.opacity = '1'; t.style.transition='all .28s';
+                toastTimer = setTimeout(()=>{ t.style.opacity='0'; }, 2600);
+            }
+
+            // theme toggle (demo: invert colors)
+            const themeBtn = document.getElementById('themeBtn');
+            let dark = true;
+            themeBtn.addEventListener('click', ()=>{
+                dark = !dark;
+                if(!dark){
+                    document.documentElement.style.setProperty('--bg','#f7fafc');
+                    document.documentElement.style.setProperty('--card','#ffffff');
+                    document.documentElement.style.setProperty('--muted','#475569');
+                    document.documentElement.style.setProperty('--glass','rgba(0,0,0,0.04)');
+                    document.documentElement.style.setProperty('--glass-2','rgba(0,0,0,0.02)');
+                    document.documentElement.style.setProperty('--glass-3','rgba(0,0,0,0.06)');
+                    document.documentElement.style.setProperty('color','#061426');
+                } else {
+                    location.reload();
+                }
+            });
+
+            // reveal on scroll
+            function observeReveals(){
+                const items = document.querySelectorAll('[data-reveal]');
+                const io = new IntersectionObserver((entries, obs)=>{
+                    entries.forEach(en=>{
+                        if(en.isIntersecting){ en.target.classList.add('show'); obs.unobserve(en.target); }
+                    });
+                }, {threshold:0.12});
+                items.forEach(i=> io.observe(i));
+            }
+            observeReveals();
+
+            // tilt effect for product cards
+            document.addEventListener('mousemove', (e)=>{
+                const cards = document.querySelectorAll('.tilt');
+                cards.forEach(card=>{
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    card.style.transform = `perspective(900px) rotateX(${(-y*6)}deg) rotateY(${(x*6)}deg) translateY(-6px)`;
+                });
+            });
+            document.addEventListener('mouseleave', ()=>{
+                document.querySelectorAll('.tilt').forEach(c=> c.style.transform='none' );
+            });
+
+            // simple product data & grid already loaded
+            // contact & cart initialization
+            updateCartUI();
+
+            // helper utilities
+            window.scrollToSection = function(id){
+                const el = document.getElementById(id);
+                if(!el) return window.scrollTo({top:0, behavior:'smooth'});
+                el.scrollIntoView({behavior:'smooth', block:'start'});
+            }
+
+            // modal demo
+            window.openDemo = function(){
+                document.getElementById('demoModal').style.display='flex';
+            }
+            window.closeDemo = function(){ document.getElementById('demoModal').style.display='none'; }
+
+            // Live demo functions
+            window.applyColor = function(hex){
+                const car = document.getElementById('carBody');
+                car.setAttribute('fill', hex);
+                document.getElementById('hexColor').value = hex;
+            }
+            window.applyFromInput = function(){
+                const val = document.getElementById('hexColor').value.trim();
+                if(/^#([0-9a-fA-F]{3}){1,2}$/.test(val)) applyColor(val);
+                else flashToast('Enter valid hex color like #ff6b6b');
+            }
+            window.updateSheen = function(v){ document.getElementById('sheenVal').textContent = v; document.getElementById('carBody').style.opacity = (0.6 + v/200); }
+            window.saveDemoColor = function(){
+                const hex = document.getElementById('hexColor').value || '#ff6b6b';
+                // create a pseudo product
+                const pid = 'SW-' + hex.replace('#','').toUpperCase();
+                cart.push({ id: pid, name: `Custom Swatch ${hex}`, price: 12.5, qty: 1 });
+                saveCart();
+                flashToast('Swatch saved to cart');
+            }
+            window.downloadSwatch = function(){
+                const hex = (document.getElementById('hexColor').value || '#ff6b6b');
+                // create simple PNG swatch using SVG data URL
+                const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='400'><rect width='100%' height='100%' fill='${hex}'/></svg>`;
+                const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+                const a = document.createElement('a'); a.href = url; a.download = `swatch-${hex.replace('#','')}.svg`; a.click();
+                flashToast('Swatch downloaded');
+            }
+
+            window.openCart = openCart;
+            window.closeCart = closeCart;
+
+            // simple demo for opening details will be attached above
+
+            // animate initial product load appearance
+            setTimeout(()=> observeReveals(), 120);
+
+            // ensure keyboard accessible escape modal
+            document.addEventListener('keydown', (e)=> {
+                if(e.key === 'Escape') {
+                    closeDemo();
+                    closeCart();
+                }
+            });
+
+        })();
+    </script>
+</body>
+</html></div></g></svg></div></form></div></aside></div></section></div></section></div></aside></div></section></div>
